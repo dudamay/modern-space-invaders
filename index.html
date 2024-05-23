@@ -13,7 +13,7 @@
             height: 100%;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 14px;
-            background-color: black;                                                                                                              
+            background-color: black;                                                                                                          
         }                                 
     </style>
 </head>
@@ -58,24 +58,24 @@
               cursor: pointer;
               position:relative;
               display: inline-block;
-             
              "
          >
-<img src="./img/button.png" alt="start Button">
-<span
-            style="
-            position: absolute;
-            color: green;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-            
+            <img src="./img/button.png" alt="start Button">
+            <span
+                style="
+                 position: absolute;
+                color: green;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%,-50%);
             "
->Iniciar</span>
+        >Iniciar</span>
          </div><!--Fim do id startButton-->
         </div>
       </div> <!-- Fim do id startScreen -->
-      <div
+      <div><!--Fim do id parentDiv-->
+
+      </div>
          id="restartScreen"
          style="
              display: flex;
@@ -95,10 +95,14 @@
         <div style="text-align: center;">
             <h1 style="color: chartreuse;">Game Over</h1>
             <div
-                 id="restartButton"
-                 style="cursor: pointer; position: relative; display: inline-block;"
+                id="restartButton"
+                 style="
+                  cursor: pointer;
+                  position: relative; 
+                  display: inline-block;
+                  "
             >
-                <img src="./img/button.png" alt="Restart Button" />
+                <img src="./img/button.png" alt="Start Button" >
                 <span
                 style="
                     position:absolute;
@@ -107,8 +111,7 @@
                     left:50%;
                     transform: translate(-50%,-50%);
                 "
-                
-                >Reiniciar</span>
+                >Iniciar</span>
             </div> <!--Fim do id restartButton-->
         </div>
       </div><!--Fim do id restartScreen-->
