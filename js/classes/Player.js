@@ -22,4 +22,29 @@ class Player {
             this.frames = 0;
         };
     }  
+
+    draw(){
+        c.save();
+        c.globalAlpha = this.opacity;
+        c.translate(
+            this.position.x + Player.width / 2, 
+            this.position.y + Player.height / 2
+        );
+
+         c.rotate(this.rotation);
+         c.translate(
+            -Player.position.x - Player.width /2,
+            -Player.position.y - Player.height / 2
+         );
+
+         c.drawImage(
+            this.image,
+            this.position.x,
+            this.position.y,
+            this.width,
+            this.height
+        );
+
+        c.restore(); 
+      }
 }
