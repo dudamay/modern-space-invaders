@@ -45,6 +45,6 @@ function createParticles({object,color,fades}){
             color : color || "#BAA0DE",
             fades
         })
-    );
+      );
     }
 }
