@@ -28,17 +28,15 @@ let keys = {
 let frames = 0;
 let randomInterval = Math.floor(Math.random() * 500 + 500);
 
-let gama = {
+let game = {
   over: false,
   active: true
 };
 
 let score = 0;
-
 let spawnBuffer = 500;
 let fps = 60;
 let fpsInterval = 1000 / fps;
-
 let msPrev = window.performance.now();
 
 function init() {
@@ -64,7 +62,6 @@ function init() {
 
   frames = 0;
   randomInterval = Math.floor(Math.random() * 500 + 500);
-
   game = {
     over: false,
     active: true
@@ -94,13 +91,13 @@ function endGame() {
   audio.gameOver.play();
 
   setTimeout(() => {
-    players.opacity = 0;
+    player.opacity = 0;
     game.over = true;
   }, 0);
 
   setTimeout(() => {
     game.active = false;
-    document.querySelector("#restartScreen").computedStyleMap.display = "flex";
+    document.querySelector("#restartScreen").style.display = "flex";
   }, 2000);
 
   createParticles({
@@ -131,6 +128,7 @@ function animate() {
       powerUps.splice(i, 1);
     else powerUp.update();
   }
+
   if (frames % 500 === 0) {
     powerUps.push(
       new PowerUp({
@@ -150,7 +148,7 @@ function animate() {
     bombs.push(
       new Bomb({
         position: {
-          x: randomBetween(Bomb.radius, canvas.width - bomb.radius),
+          x: randomBetween(Bomb.radius, canvas.width - Bomb.radius),
           y: randomBetween(Bomb.radius, canvas.height - Bomb.radius)
         },
         velocity: {
@@ -174,13 +172,14 @@ function animate() {
   for (let i = player.particles.length - 1; i >= 0; i--) {
     const particle = player.particles[i];
     particle.update();
-    if (particle.opacity === 0) player.particles[1].splice(i, 1);
+
+    if (particle.opacity === 0) player.particles[i].splice(i, 1);
   }
 
   particles.forEach((particle, i) => {
     if (particle.position.y - particle.radius >= canvas.height) {
-      particles.position.x = Math.random() * canvas.width;
-      particles.position.y = -particle.radius;
+      particle.position.x = Math.random() * canvas.width;
+      particle.position.y = -particle.radius;
     }
 
     if (particle.opacity <= 0) {
@@ -213,7 +212,7 @@ function animate() {
     }
   });
 
-  for (let i = projectiles - 1; i >= 0; i--) {
+  for (let i = projectiles.length - 1; i >= 0; i--) {
     const projectile = projectiles[i];
 
     for (let j = bombs.length - 1; j >= 0; j--) {
@@ -228,7 +227,7 @@ function animate() {
         !bomb.active
       ) {
         projectiles.splice(i, 1);
-        bombs.explode();
+        bomb.explode();
       }
     }
 
@@ -253,7 +252,7 @@ function animate() {
       }
     }
 
-    if (projectile.position.y + particles.radius <= 0) {
+    if (projectile.position.y + projectile.radius <= 0) {
       projectiles.splice(i, 1);
     } else {
       projectile.update();
@@ -262,9 +261,10 @@ function animate() {
 
   grids.forEach((grid, gridIndex) => {
     grid.update();
+
     if (frames % 100 === 0 && grid.invaders.length > 0) {
       grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(
-        invadersProjectiles
+        invaderProjectiles
       );
     }
 
@@ -274,6 +274,7 @@ function animate() {
 
       for (let j = bombs.length - 1; j >= 0; j--) {
         const bomb = bombs[j];
+
         const invaderRadius = 15;
 
         if (
@@ -288,7 +289,7 @@ function animate() {
           scoreEl.innerHTML = score;
 
           grid.invaders.splice(i, 1);
-          createScorelabel({
+          createScoreLabel({
             object: invader,
             score: 50
           });
@@ -300,25 +301,24 @@ function animate() {
         }
       }
 
-      projectiles.forEach((projectiles, j) => {
+      projectiles.forEach((projectile, j) => {
         if (
-          projectiles.position.y - projectiles.radius <=
+          projectile.position.y - projectile.radius <=
             invader.position.y + invader.height &&
-          projectiles.position.x + projectile.radius >= invader.position.x &&
-          projectiles.position.x - projectile.radius <=
+          projectile.position.x + projectile.radius >= invader.position.x &&
+          projectile.position.x - projectile.radius <=
             invader.position.x + invader.width &&
-          projectiles.position.y + projectiles.radius >= invader.position.y
+          projectile.position.y + projectile.radius >= invader.position.y
         ) {
           setTimeout(() => {
             const invaderFound = grid.invaders.find(
               (invader2) => invader2 === invader
             );
-
-            const projectilefound = projectiles.find(
-              (projectile2) => projectile2 === projectile2
+            const projectileFound = projectiles.find(
+              (projectile2) => projectile2 === projectile
             );
 
-            if (invaderFound && projectilefound) {
+            if (invaderFound && projectileFound) {
               score += 100;
               scoreEl.innerHTML = score;
 
@@ -336,14 +336,13 @@ function animate() {
               projectiles.splice(j, 1);
 
               if (grid.invaders.length > 0) {
-                const firstInvaders = grid.invaders[0];
-                const lastInvaders = grid.invaders[grid.invaders.length - 1];
+                const firstInvader = grid.invaders[0];
+                const lastInvader = grid.invaders[grid.invaders.length - 1];
 
                 grid.width =
-                  lastInvaders.position.x -
-                  firstInvaders.position.x +
-                  lastInvaders.width;
-
+                  lastInvader.position.x -
+                  firstInvader.position.x +
+                  lastInvader.width;
                 grid.position.x = firstInvader.position.x;
               } else {
                 grids.splice(gridIndex, 1);
@@ -364,53 +363,54 @@ function animate() {
     }
   });
 
-  if(keys.ArrowLeft.pressed && player.position.x >=0) {
+  if (keys.ArrowLeft.pressed && player.position.x >= 0) {
     player.velocity.x = -7;
     player.rotation = -0.15;
-  } else if(
+  } else if (
     keys.ArrowRight.pressed &&
     player.position.x + player.width <= canvas.width
-  ){
+  ) {
     player.velocity.x = 7;
     player.rotation = 0.15;
-  } else{
+  } else {
     player.velocity.x = 0;
     player.rotation = 0;
   }
-    if(frames % randomInterval === 0) {
-      spawnBuffer = spawnBuffer.buffer < 0 ? 100 : spawnBuffer;
-      grids.push(new Grid());
-      randomIntervals = Math.floor(Math.random()) * 500 + spawnBuffer;
-      frames = 0;
-      spawnBuffer -= 100;
-    }
-    
-    if(
-      keys.space.pressed &&
-      player.powerUp === "Metralhadora" &&
-      frames % 2 === 0 &&
-      !game.over
-    ){
-      if(frames % 6 === 0) audio.shoot.play();
-      projectiles.push(
-        new Projectile({
-          position: {
-            x: player.position.x + player.width / 2,
-            y: player.position.y
-          },
-          velocity: {
-            x: 0,
-            y: -10
-          },
-          color: "yellow" 
-        })
-      );
-    
-    }
-    frames++;
+
+  if (frames % randomInterval === 0) {
+    spawnBuffer = spawnBuffer < 0 ? 100 : spawnBuffer;
+    grids.push(new Grid());
+    randomInterval = Math.floor(Math.random() * 500 + spawnBuffer);
+    frames = 0;
+    spawnBuffer -= 100;
+  }
+
+  if (
+    keys.space.pressed &&
+    player.powerUp === "Metralhadora" &&
+    frames % 2 === 0 &&
+    !game.over
+  ) {
+    if (frames % 6 === 0) audio.shoot.play();
+    projectiles.push(
+      new Projectile({
+        position: {
+          x: player.position.x + player.width / 2,
+          y: player.position.y
+        },
+        velocity: {
+          x: 0,
+          y: -10
+        },
+        color: "yellow"
+      })
+    );
+  }
+
+  frames++;
 }
 
-document.querySelector("#startButton").addEventListener("click",() => {
+document.querySelector("#startButton").addEventListener("click", () => {
   audio.backgroundMusic.play();
   audio.start.play();
 
@@ -420,17 +420,17 @@ document.querySelector("#startButton").addEventListener("click",() => {
   animate();
 });
 
-document.querySelector("#restartScreen").addEventListener("click", () => {
+document.querySelector("#restartButton").addEventListener("click", () => {
   audio.select.play();
-  document.querySelecttor("#restartScreen").style.display = "none";
+  document.querySelector("#restartScreen").style.display = "none";
   init();
   animate();
 });
 
-addEventListener("keydown",({key}) =>{
-  if(game.over) return;
+addEventListener("keydown", ({ key }) => {
+  if (game.over) return;
 
-  switch(key) {
+  switch (key) {
     case "ArrowLeft":
       keys.ArrowLeft.pressed = true;
       break;
@@ -439,8 +439,8 @@ addEventListener("keydown",({key}) =>{
       break;
     case " ":
       keys.space.pressed = true;
-      
-      if(player.powerUp === "Metralhadora")return;
+
+      if (player.powerUp === "Metralhadora") return;
 
       audio.shoot.play();
       projectiles.push(
@@ -452,15 +452,16 @@ addEventListener("keydown",({key}) =>{
           velocity: {
             x: 0,
             y: -10
-          }, 
+          }
         })
       );
+
       break;
   }
 });
 
-addEventListener("keyup",({key})=>{
-  switch(key) {
+addEventListener("keyup", ({ key }) => {
+  switch (key) {
     case "ArrowLeft":
       keys.ArrowLeft.pressed = false;
       break;
@@ -469,7 +470,7 @@ addEventListener("keyup",({key})=>{
       break;
     case " ":
       keys.space.pressed = false;
+
       break;
   }
 });
-

@@ -7,9 +7,8 @@ class Invader {
 
     const image = new Image();
     image.src = "./img/invader.png";
-
     image.onload = () => {
-      const scale = image;
+      const scale = 1;
       this.image = image;
       this.width = image.width * scale;
       this.height = image.height * scale;
@@ -40,8 +39,9 @@ class Invader {
 
   shoot(invaderProjectiles) {
     audio.enemyShoot.play();
+
     invaderProjectiles.push(
-      new InvaderProjectiles({
+      new InvaderProjectile({
         position: {
           x: this.position.x + this.width / 2,
           y: this.position.y + this.height
